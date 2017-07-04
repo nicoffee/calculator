@@ -1,3 +1,30 @@
 body {
     color: darkred;
 }
+
+button {
+    border: 1px solid silver;
+    background-color: aliceblue;
+    width: 50px;
+    height: 50px;
+    margin: 10px;
+    font-size: 35px;
+}
+
+.calculator {
+    border: 2px solid firebrick;
+    width: 500px;
+    padding: 20px;
+}
+
+.numberButtons {
+    display: flex;
+    width: 100%;
+    flex-direction: column;
+}
+
+.screen {
+    height: 100px;
+    border: 1px solid silver;
+    background-color: aliceblue;
+}
