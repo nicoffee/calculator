@@ -9,15 +9,23 @@ class Button extends React.Component {
     }
 
     render() {
-        return <button onClick={this.props.handler}>{this.props.number}</button>;
+        return (
+            <button
+              onClick={!this.props.pending ?
+                () => this.props.handleClick(this.props.value) :
+                () => this.props.handleClickOperation(this.props.value, this.props.operation)}>
+                {this.props.value}
+            </button>
+        );
     }
 }
 
 class Calculator extends React.Component {
     constructor(props) {
         super(props);
-
         this.handleClick = this.handleClick.bind(this);
+        this.handleClickOperation = this.handleClickOperation.bind(this);
+
         this.state = {
             number: '',
             pendingOperation: false,
@@ -32,34 +40,28 @@ class Calculator extends React.Component {
     }
 
     handleClickOperation(num1, operator) {
+        let result;
         const num2 = this.state.number;
-
-        this.setState({
-            pendingOperation: false
-        });
 
         switch (operator) {
             case '+':
-                this.setState({
-                    number: num1 + num2,
-                });
+                result = num2 + num1;
                 break;
             case '-':
-                this.setState({
-                    number: num2 - num1,
-                });
+                result = num2 - num1;
                 break;
             case '*':
-                this.setState({
-                    number: num1 * num2,
-                });
+                result = num2 * num1;
                 break;
             case '/':
-                this.setState({
-                    number: num2 / num1,
-                });
+                result = num2 / num1;
                 break;
         }
+
+        this.setState({
+            number: result,
+            pendingOperation: false
+        });
     }
 
     prepareOperation(operator) {
@@ -70,39 +72,33 @@ class Calculator extends React.Component {
     }
 
     render() {
+        let buttons = [];
+        for (let i = 1; i <= 9; i++) {
+            buttons.push(
+              <Button
+                value={i}
+                pending = {this.state.pendingOperation}
+                operation = {this.state.operation}
+                handleClick = {this.handleClick}
+                handleClickOperation = {this.handleClickOperation}
+              />
+            )
+        }
+
         return (
           <div className="calculator">
-              <div className="screen">{ this.state.number }</div>
-              <div className="numberButtons">
-                  <div>
-                      <button
-                        value={1}
-                        onClick={
-                            () => {
-                                !this.state.pendingOperation ? this.handleClick(1) : this.handleClickOperation(1, this.state.operation)
-                            }
-                        }>1
-                      </button>
-                      <button
-                        value={2}
-                        onClick={
-                            () => {
-                                !this.state.pendingOperation ? this.handleClick(2) : this.handleClickOperation(2, this.state.operation)
-                            }
-                        }>2
-                      </button>
-                      <button
-                        value={3}
-                        onClick={
-                            () => {
-                                !this.state.pendingOperation ? this.handleClick(3) : this.handleClickOperation(3, this.state.operation)
-                            }
-                        }>3
-                      </button>
-                      <button onClick={() => this.prepareOperation('+')}>+</button>
-                      <button onClick={() => this.prepareOperation('-')}>-</button>
-                      <button onClick={() => this.prepareOperation('*')}>*</button>
-                      <button onClick={() => this.prepareOperation('/')}>/</button>
+              <div className="calculator__screen">{ this.state.number }</div>
+              <div className="calculator__buttons">
+                  <div className="buttons">
+                      <div className="buttons__numbers">
+                          {buttons}
+                      </div>
+                      <div className="buttons__operations">
+                          <button onClick={() => this.prepareOperation('+')}>+</button>
+                          <button onClick={() => this.prepareOperation('-')}>-</button>
+                          <button onClick={() => this.prepareOperation('*')}>*</button>
+                          <button onClick={() => this.prepareOperation('/')}>/</button>
+                      </div>
                   </div>
               </div>
           </div>
