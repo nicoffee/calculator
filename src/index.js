@@ -3,39 +3,38 @@ import ReactDOM from 'react-dom'
 
 import './style.scss'
 
-class Button extends React.Component {
-    constructor(props) {
-        super(props);
-    }
-
-    render() {
-        return (
-            <button
-              onClick={!this.props.pending ?
-                () => this.props.handleClick(this.props.value) :
-                () => this.props.handleClickOperation(this.props.value, this.props.operation)}>
-                {this.props.value}
-            </button>
-        );
-    }
-}
+import Button from './components/Button'
 
 class Calculator extends React.Component {
     constructor(props) {
         super(props);
         this.handleClick = this.handleClick.bind(this);
         this.handleClickOperation = this.handleClickOperation.bind(this);
+        this.reset = this.reset.bind(this);
+        this.calculate = this.calculate.bind(this);
 
         this.state = {
             number: '',
             pendingOperation: false,
-            operation: ''
+            pendingInput: false,
+            operation: '',
+            screen: ''
         };
     }
 
     handleClick(num) {
-        this.setState({
-            number: num
+        this.setState((prevState, props) => {
+            if (prevState.number) {
+                return {
+                    number: prevState.number * 10 + num,
+                    screen: this.state.screen += num
+                }
+            } else {
+                return {
+                    number: num,
+                    screen: this.state.screen += num
+                }
+            }
         });
     }
 
@@ -60,14 +59,30 @@ class Calculator extends React.Component {
 
         this.setState({
             number: result,
-            pendingOperation: false
+            pendingOperation: false,
+            pendingInput: false,
+            screen: this.state.screen += num1
         });
     }
 
     prepareOperation(operator) {
         this.setState({
             pendingOperation: true,
-            operation: operator
+            operation: operator,
+            screen: this.state.screen += operator
+        });
+    }
+
+    reset() {
+        this.setState({
+            number: '',
+            screen: ''
+        });
+    }
+
+    calculate() {
+        this.setState({
+            screen: eval(this.state.screen)
         });
     }
 
@@ -76,6 +91,7 @@ class Calculator extends React.Component {
         for (let i = 1; i <= 9; i++) {
             buttons.push(
               <Button
+                key={i}
                 value={i}
                 pending = {this.state.pendingOperation}
                 operation = {this.state.operation}
@@ -87,18 +103,20 @@ class Calculator extends React.Component {
 
         return (
           <div className="calculator">
-              <div className="calculator__screen">{ this.state.number }</div>
+              <div className="calculator__screen">{ this.state.screen }</div>
               <div className="calculator__buttons">
                   <div className="buttons">
                       <div className="buttons__numbers">
                           {buttons}
                       </div>
+                      <button onClick={this.reset}>C</button>
                       <div className="buttons__operations">
                           <button onClick={() => this.prepareOperation('+')}>+</button>
                           <button onClick={() => this.prepareOperation('-')}>-</button>
                           <button onClick={() => this.prepareOperation('*')}>*</button>
                           <button onClick={() => this.prepareOperation('/')}>/</button>
                       </div>
+                      <button onClick={this.calculate}>=</button>
                   </div>
               </div>
           </div>
