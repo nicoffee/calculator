@@ -14,12 +14,14 @@ class Calculator extends React.Component {
         this.calculate = this.calculate.bind(this);
 
         this.state = {
-            number: '',
-            pendingOperation: false,
-            pendingInput: false,
+            number: 0,
             operation: '',
-            screen: ''
+            screen: '',
+            pendingOperation: false,
+            pendingInput: false
         };
+
+        this.baseState = this.state
     }
 
     handleClick(num) {
@@ -66,18 +68,30 @@ class Calculator extends React.Component {
     }
 
     prepareOperation(operator) {
-        this.setState({
-            pendingOperation: true,
-            operation: operator,
-            screen: this.state.screen += operator
+        this.setState((prevState, props) => {
+            if (prevState.operation === operator) {
+                return {
+                    pendingOperation: true,
+                    operation: operator,
+                }
+            } else {
+                let string = this.state.screen;
+
+                if (this.state.operation) {
+                    string = this.state.screen.slice(0, -1);
+                }
+
+                return {
+                    pendingOperation: true,
+                    operation: operator,
+                    screen: string + operator
+                }
+            }
         });
     }
 
     reset() {
-        this.setState({
-            number: '',
-            screen: ''
-        });
+        this.setState(this.baseState)
     }
 
     calculate() {
