@@ -16,25 +16,39 @@ class Calculator extends React.Component {
         this.state = {
             number: 0,
             operation: '',
-            screen: '',
+            screen: '0',
             pendingOperation: false,
-            pendingInput: false
+            pendingInput: false,
+            firstNull: true
         };
 
-        this.baseState = this.state
+        this.baseState = this.state;
+
+        console.log('this.baseState', this.baseState);
     }
 
     handleClick(num) {
+        if (this.state.firstNull && !num) {
+            return;
+        } else {
+            this.setState({
+                firstNull: false,
+                screen: num
+            })
+        }
+
         this.setState((prevState, props) => {
             if (prevState.number) {
                 return {
                     number: prevState.number * 10 + num,
-                    screen: this.state.screen += num
+                    screen: this.state.screen += num,
+                    operation: this.baseState.operation
                 }
             } else {
                 return {
                     number: num,
-                    screen: this.state.screen += num
+                    screen: this.state.screen += num,
+                    operation: this.baseState.operation
                 }
             }
         });
@@ -91,7 +105,13 @@ class Calculator extends React.Component {
     }
 
     reset() {
-        this.setState(this.baseState)
+        this.setState({
+            number: 0,
+            operation: '',
+            screen: '0',
+            pendingOperation: false,
+            pendingInput: false
+        })
     }
 
     calculate() {
@@ -121,6 +141,13 @@ class Calculator extends React.Component {
               <div className="calculator__buttons">
                   <div className="buttons">
                       <div className="buttons__numbers">
+                          <Button
+                            value={0}
+                            pending = {this.state.pendingOperation}
+                            operation = {this.state.operation}
+                            handleClick = {this.handleClick}
+                            handleClickOperation = {this.handleClickOperation}
+                          />
                           {buttons}
                       </div>
                       <button onClick={this.reset}>C</button>
