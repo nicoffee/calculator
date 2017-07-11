@@ -28,30 +28,36 @@ class Calculator extends React.Component {
     }
 
     handleClick(num) {
-        if (this.state.firstNull && !num) {
-            return;
-        } else {
-            this.setState({
-                firstNull: false,
-                screen: num
-            })
-        }
+        const strNum = num.toString();
 
+        if (this.state.firstNull) {
+            console.log('firstNull');
+        this.setState((prevState, props) => {
+            return {
+                number: num,
+                screen: strNum,
+                firstNull: false,
+
+                    }
+                }
+            )
+        } else {
         this.setState((prevState, props) => {
             if (prevState.number) {
                 return {
                     number: prevState.number * 10 + num,
-                    screen: this.state.screen += num,
+                    screen: this.state.screen += strNum,
                     operation: this.baseState.operation
                 }
             } else {
                 return {
                     number: num,
-                    screen: this.state.screen += num,
+                    screen: this.state.screen += strNum,
                     operation: this.baseState.operation
                 }
             }
         });
+        }
     }
 
     handleClickOperation(num1, operator) {
@@ -87,6 +93,7 @@ class Calculator extends React.Component {
                 return {
                     pendingOperation: true,
                     operation: operator,
+                    number: 0
                 }
             } else {
                 let string = this.state.screen;
@@ -98,7 +105,8 @@ class Calculator extends React.Component {
                 return {
                     pendingOperation: true,
                     operation: operator,
-                    screen: string + operator
+                    screen: string + operator,
+                    number: 0
                 }
             }
         });
