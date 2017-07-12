@@ -9,9 +9,7 @@ class Button extends React.Component {
     render() {
         return (
             <button
-                onClick={!this.props.pending ?
-                    () => this.props.handleClick(this.props.value) :
-                    () => this.props.handleClickOperation(this.props.value, this.props.operation)}>
+                onClick={() => this.props.handleClick(this.props.value)}>
                 {this.props.value}
             </button>
         );
