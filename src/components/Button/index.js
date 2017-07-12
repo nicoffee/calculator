@@ -9,7 +9,9 @@ class Button extends React.Component {
     render() {
         return (
             <button
-                onClick={() => this.props.handleClick(this.props.value)}>
+                onClick={() => this.props.handleClick(this.props.value)}
+                ref={(ref) => this[`myButton${this.props.value}`] = ref}
+            >
                 {this.props.value}
             </button>
         );

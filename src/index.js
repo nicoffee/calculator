@@ -12,27 +12,41 @@ class Calculator extends React.Component {
         this.reset = this.reset.bind(this);
         this.calculate = this.calculate.bind(this);
         this.addDecimal = this.addDecimal.bind(this);
+        this.handleKeys = this.handleKeys.bind(this);
 
         this.state = {
             number: 0,
             operation: '',
             screen: '0',
-            pendingOperation: false,
-            pendingInput: false,
             firstNull: true,
-            isDecimal: false
+            isDecimal: false,
+            isCalculated: false
         };
+    }
+
+    componentDidMount() {
+        document.addEventListener("keypress", this.handleKeys, false);
+    }
+
+    handleKeys(e) {
+        if (e.charCode === 99 || e.charCode === 27) {
+            this.myButton.click();
+        }
     }
 
     handleClick(num) {
         const strNum = num.toString();
 
+        this.setState({
+            operation: '',
+            isCalculated: false
+        });
+
         this.setState((prevState, props) => {
-            if (prevState.number === 0 && this.state.screen === '0') {
+            if (prevState.number === 0 && this.state.screen === '0' || this.state.isCalculated) {
                 return {
                     number: num,
                     screen: strNum,
-                    operation: ''
                 }
             }
 
@@ -40,28 +54,28 @@ class Calculator extends React.Component {
                 if (this.state.isDecimal) {
                     return {
                         number: prevState.number + num / 10,
-                        screen: this.state.screen += strNum,
-                        operation: ''
+                        screen: this.state.screen += strNum
                     }
                 }
 
-                console.log('fa14w12e');
                 return {
                     number: prevState.number * 10 + num,
-                    screen: this.state.screen += strNum,
-                    operation: ''
+                    screen: this.state.screen += strNum
                 }
-            } else {
-                return {
-                    number: num,
-                    screen: this.state.screen += strNum,
-                    operation: ''
-                }
+            }
+
+            return {
+                number: num,
+                screen: this.state.screen += strNum
             }
         });
     }
 
     prepareOperation(operator) {
+        this.setState({
+            isCalculated: false
+        });
+
         this.setState((prevState, props) => {
             if (this.state.firstNull && !prevState.screen) {
                 this.setState((prevState, props) => {
@@ -69,17 +83,17 @@ class Calculator extends React.Component {
                         number: num,
                         screen: strNum,
                         firstNull: false,
+
                     }
                 })
             }
 
             if (prevState.operation === operator) {
                 return {
-                    pendingOperation: true,
                     operation: operator,
                     number: 0,
                     firstNull: true,
-                    isDecimal: false
+                    isDecimal: false,
                 }
             } else {
                 let string = this.state.screen;
@@ -89,12 +103,11 @@ class Calculator extends React.Component {
                 }
 
                 return {
-                    pendingOperation: true,
                     operation: operator,
                     screen: string + operator,
                     number: 0,
                     firstNull: true,
-                    isDecimal: false
+                    isDecimal: false,
                 }
             }
         });
@@ -114,8 +127,6 @@ class Calculator extends React.Component {
             number: 0,
             operation: '',
             screen: '0',
-            pendingOperation: false,
-            pendingInput: false,
             firstNull: true,
             isDecimal: false
         })
@@ -123,7 +134,8 @@ class Calculator extends React.Component {
 
     calculate() {
         this.setState({
-            screen: eval(this.state.screen)
+            screen: eval(this.state.screen),
+            isCalculated: true
         });
     }
 
@@ -131,7 +143,7 @@ class Calculator extends React.Component {
         let buttons = [];
         for (let i = 1; i <= 9; i++) {
             buttons.push(
-              <Button
+            <Button
                 key={i}
                 value={i}
                 operation={this.state.operation}
@@ -146,23 +158,25 @@ class Calculator extends React.Component {
               <div className="calculator__buttons">
                   <div className="buttons">
                       <div className="buttons__numbers">
+                          {buttons}
+                      </div>
+                      <div className="buttons__other">
                           <Button
                             value={0}
-                            pending={this.state.pendingOperation}
                             operation={this.state.operation}
                             handleClick={this.handleClick}
                           />
-                          {buttons}
+                          <button ref={(ref) => { this.myButton = ref; }} className="operation_reset" onClick={this.reset}>C</button>
                       </div>
-                      <button onClick={this.reset}>C</button>
-                      <button onClick={this.addDecimal}>.</button>
                       <div className="buttons__operations">
                           <button onClick={() => this.prepareOperation('+')}>+</button>
                           <button onClick={() => this.prepareOperation('-')}>-</button>
                           <button onClick={() => this.prepareOperation('*')}>*</button>
                           <button onClick={() => this.prepareOperation('/')}>/</button>
+                          <button className="operation_calculate" onClick={this.calculate}>=</button>
+                          <button onClick={this.addDecimal}>.</button>
                       </div>
-                      <button onClick={this.calculate}>=</button>
+
                   </div>
               </div>
           </div>
