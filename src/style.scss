@@ -94,3 +94,9 @@ button {
         background-color: #c0392b;
     }
 }
+
+@media (min-width: 340px) and (max-width: 615px) {
+    .buttons__operations {
+        grid-template-columns: repeat(4, 1fr);
+    }
+}

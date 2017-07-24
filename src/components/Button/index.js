@@ -10,7 +10,7 @@ class Button extends React.Component {
         return (
             <button
                 onClick={() => this.props.handleClick(this.props.value)}
-                ref={(ref) => this[`myButton${this.props.value}`] = ref}
+                ref={this.props.passedRef}
             >
                 {this.props.value}
             </button>
